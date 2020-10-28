@@ -3,8 +3,16 @@
 // Check node version before requiring/doing anything else
 // The user may be on a very old node version
 
+// 这儿依赖了@vue/cli-shared-utils这个包，在项目中找到cli-shared-utils这个文件夹，就是这个包对应的源码。
+// 这儿引入了chalk，semver两个库。
+// chalk：这个包的作用就是让终端输出的信息带有颜色，这样看着更加直观。github：https://github.com/chalk/chalk
+// semver：npm的语义版本器。github：https://github.com/npm/node-semver
 const { chalk, semver } = require('@vue/cli-shared-utils')
+
+// 引入包的node版本
 const requiredVersion = require('../package.json').engines.node
+
+// 
 const leven = require('leven')
 
 function checkNodeVersion (wanted, id) {

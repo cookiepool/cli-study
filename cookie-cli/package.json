@@ -2,7 +2,9 @@
   "name": "cookie-cli",
   "version": "1.0.0",
   "description": "a personal cli for vue, or react.",
-  "bin": "cookie-cli.js",
+  "bin": {
+    "cookie-cli": "bin/cookie-cli.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
