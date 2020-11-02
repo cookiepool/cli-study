@@ -12,24 +12,35 @@ const { chalk, semver } = require('@vue/cli-shared-utils')
 // 引入包的node版本
 const requiredVersion = require('../package.json').engines.node
 
-// 
+// 快速比较两个字符串差异的个数。github: https://github.com/sindresorhus/leven
 const leven = require('leven')
 
+// 封装的Node.js版本检测函数
+// wanted: 你想要的版本
+// id: 你当前项目的名字
 function checkNodeVersion (wanted, id) {
+  // 调用semver.satisfies函数来比较当前Node.js版本与你想要的版本是否满足
   if (!semver.satisfies(process.version, wanted, { includePrerelease: true })) {
+    // 不满足就借助chalk.red打印错误信息
     console.log(chalk.red(
       'You are using Node ' + process.version + ', but this version of ' + id +
       ' requires Node ' + wanted + '.\nPlease upgrade your Node version.'
     ))
+    // 终止node.js的进程。http://nodejs.cn/api/process.html#process_process_exit_code
     process.exit(1)
   }
 }
 
+// 调用Node.js的版本检测函数
 checkNodeVersion(requiredVersion, '@vue/cli')
 
+// Node.js将要失去维护的几个版本
 const EOL_NODE_MAJORS = ['8.x', '9.x', '11.x', '13.x']
+// 循环主要版本数组对象并做检测
 for (const major of EOL_NODE_MAJORS) {
+  // 判断版本号
   if (semver.satisfies(process.version, major)) {
+    // 提示使用LTS版本
     console.log(chalk.red(
       `You are using Node ${process.version}.\n` +
       `Node.js ${major} has already reached end-of-life and will not be supported in future major releases.\n` +
@@ -38,12 +49,28 @@ for (const major of EOL_NODE_MAJORS) {
   }
 }
 
+// ----------------------------------------------------------------
+// 以下为入口的核心代码
+
+// 引入Node.js的文件系统模块
 const fs = require('fs')
+// 引入Node.js的路径模块
 const path = require('path')
+// 将Windows的反斜杠路径转换为正斜杠路径：foo\\bar ➔ foo/bar。github: https://github.com/sindresorhus/slash
 const slash = require('slash')
+// 一个做参数解析的工具包。github: https://github.com/substack/minimist
 const minimist = require('minimist')
 
-// enter debug mode when creating test repo
+// enter debug mode when creating test repo（这个是官方注释）
+/****
+ * process.cwd() 方法会返回 Node.js 进程的当前工作目录。http://nodejs.cn/api/process.html#process_process_cwd
+ * path.resolve([...paths]) 方法会将路径或路径片段的序列解析为绝对路径。
+ * fs.existsSync(path) 如果路径存在，则返回 true，否则返回 false。
+ * 给定的路径序列会从右到左进行处理，后面的每个 path 会被追加到前面，直到构造出绝对路径。http://nodejs.cn/api/path.html#path_path_resolve_paths
+ * 下面这个判断条件的意思：
+ * slash(process.cwd()).indexOf('/packages/test') > 0；这句意思是判断当前Node.js进程是否运行在/packages/test这个目录
+ * 
+ * ****/
 if (
   slash(process.cwd()).indexOf('/packages/test') > 0 && (
     fs.existsSync(path.resolve(process.cwd(), '../@vue')) ||
