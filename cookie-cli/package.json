@@ -25,5 +25,10 @@
   "homepage": "https://github.com/cookiepool/cli-study#readme",
   "engines": {
     "node": ">=8.9"
+  },
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^6.2.0",
+    "semver": "^7.3.2"
   }
 }

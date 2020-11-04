@@ -69,7 +69,8 @@ const minimist = require('minimist')
  * 给定的路径序列会从右到左进行处理，后面的每个 path 会被追加到前面，直到构造出绝对路径。http://nodejs.cn/api/path.html#path_path_resolve_paths
  * 下面这个判断条件的意思：
  * slash(process.cwd()).indexOf('/packages/test') > 0；这句意思是判断当前Node.js进程是否运行在/packages/test这个目录
- * 
+ * fs.existsSync(path.resolve(process.cwd(), '../@vue')；这句意思是是否存在‘Node.js进程工作目录 + @vue’这个路径
+ * fs.existsSync(path.resolve(process.cwd(), '../../@vue'；这句同理
  * ****/
 if (
   slash(process.cwd()).indexOf('/packages/test') > 0 && (
@@ -77,10 +78,14 @@ if (
     fs.existsSync(path.resolve(process.cwd(), '../../@vue'))
   )
 ) {
+  // 给env对象新增属性VUE_CLI_DEBUG
   process.env.VUE_CLI_DEBUG = true
 }
 
+// commander.js 一款重量轻，表现力和强大的命令行框架，提供了用户命令行输入和参数解析强大功能。https://github.com/tj/commander.js
+// 我们在控制台输入vue打印出的一系列命令就是commander提供的功能，注意：@vue/cli还是使用的2.x.x版本的commander，目前最新的为6.x.x版本，语法发生了变化。
 const program = require('commander')
+// 引入lib里面的模块
 const loadCommand = require('../lib/util/loadCommand')
 
 program
