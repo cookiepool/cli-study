@@ -16,8 +16,11 @@ program.version('1.0.0');
 program.version('1.1.0')
   .option('-t, --test', 'test option function') // 一般用法
   .option('-d, --debug-test', 'test option function -- debug test') // 带多个单词
-  .option('-a, --argu-test <name>', 'test option function -- agru test', 'default value') // 带参数<>，并设置默认值
+  .option('-a, --argu-test <name>', 'test option function -- agru test') // 带参数<>，并设置默认值
+  .option('--no-opposite', 'test --no options') // 取反
 
+// 取反
+// program.option('--no-opposite', 'test --no options')
 // 注意，在执行相关的命令后，要在控制台打印相关的信息的话，必须在最后执行以下这句代码。
 program.parse(process.argv);
 
@@ -30,5 +33,11 @@ if(program.debugTest) {
 }
 if(program.arguTest) {
   console.log(`output: ${program.arguTest}`);
+}
+
+if(program.opposite) {
+  console.log('this is a word');
+} else {
+  console.log('this is a other word');
 }
 console.log('----------------');
