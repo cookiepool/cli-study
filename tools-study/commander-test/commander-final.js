@@ -8,6 +8,7 @@ program
   .action((name, startOptions, cmd) => {
     // 如果你的可选参数是空的，那么这地方startOPtions输出的是空数组
     // console.log(name, startOptions, cmd);
+    console.log(cmd);
     if(cmd.extra) {
       console.log(`cmd.extra's value is ${ cmd.extra }`);
     } else {
@@ -18,6 +19,7 @@ program
         console.log(item);
       })
     }
-  })
+  });
 
 program.parse(process.argv);
+console.log(process.argv);

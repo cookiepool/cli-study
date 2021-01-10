@@ -89,9 +89,11 @@ const program = require('commander')
 const loadCommand = require('../lib/util/loadCommand')
 
 program
-  .version(`@vue/cli ${require('../package').version}`)
-  .usage('<command> [options]')
+  .version(`@vue/cli ${require('../package').version}`) // 定义版本信息
+  .usage('<command> [options]') // 定义帮助信息首行提示
 
+// 这部分就是你使用vue create命令对应的选项和描述
+// 关于commander的使用在这里不详细讲，可以参考我脚手架系列的文章，了解commander的基本用法
 program
   .command('create <app-name>')
   .description('create a new project powered by vue-cli-service')
@@ -109,8 +111,12 @@ program
   .option('-b, --bare', 'Scaffold project without beginner instructions')
   .option('--skipGetStarted', 'Skip displaying "Get started" instructions')
   .action((name, cmd) => {
+    // 处理commander传过来的选项，cmd是一个commander对象，包含我们使用命令时传递过来的选项等参数
+    // 这个函数的定义在最低部
     const options = cleanArgs(cmd)
-
+    
+    // 使用插件minimist解析参数，process.argv是一个数组，数组前两个数据是node的运行绝对路径和脚本执行的绝对路径。
+    // 这儿用process.argv.slice(3)做了下处理，对create命令过后超过一个以上的参数给出警告！
     if (minimist(process.argv.slice(3))._.length > 1) {
       console.log(chalk.yellow('\n Info: You provided more than one argument. The first one will be used as the app\'s name, the rest are ignored.'))
     }
