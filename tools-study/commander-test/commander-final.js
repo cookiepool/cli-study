@@ -8,7 +8,7 @@ program
   .action((name, startOptions, cmd) => {
     // 如果你的可选参数是空的，那么这地方startOPtions输出的是空数组
     // console.log(name, startOptions, cmd);
-    console.log(cmd);
+    console.log(cmd.options);
     if(cmd.extra) {
       console.log(`cmd.extra's value is ${ cmd.extra }`);
     } else {
