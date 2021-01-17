@@ -51,12 +51,18 @@ async function create (projectName, options) {
     exit(1)
   }
 
+  // 判断目标路径是否存在，并且未使用merge命令（--merge Merge target directory if it exists）
   if (fs.existsSync(targetDir) && !options.merge) {
+    // 是否使用force命令（Overwrite target directory if it exists）
     if (options.force) {
+      // 使用了force命令就移除当前目录
       await fs.remove(targetDir)
     } else {
+      // 清除控制台，详细源码解析见对应的文件
       await clearConsole()
+      // 如果你想在当前目录新建项目，也就是你的命令输入的是：vue create .
       if (inCurrent) {
+        // 给出提示：是否在当前目录创建项目，这里使用了inquirer这个工具
         const { ok } = await inquirer.prompt([
           {
             name: 'ok',
@@ -67,7 +73,11 @@ async function create (projectName, options) {
         if (!ok) {
           return
         }
-      } else {
+      } 
+      // 如果你不是以vue create .命令创建项目，而是指定了项目名字，并且在新建项目的目录下有跟你项目相同名字的文件夹，则会显示这儿的操作
+      // 比如你在haha文件下建了一个lala文件夹，并且在haha文件夹下打开了终端，输入以下命名：vue create lala，则会显示这部分提示
+      else {
+        // 给出三个选项overwrite：删除已存在的同名文件夹，merge：合并掉，cancel：退出操作
         const { action } = await inquirer.prompt([
           {
             name: 'action',
@@ -90,7 +100,9 @@ async function create (projectName, options) {
     }
   }
 
+  // 主体核心代码，构造器
   const creator = new Creator(name, targetDir, getPromptModules())
+  // 创建项目的核心就在这儿了
   await creator.create(options)
 }
 
