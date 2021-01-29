@@ -1,8 +1,15 @@
+// 引入node.js的path模块
 const path = require('path')
+// debug库，一个模仿Node.js核心调试技术的小型JavaScript调试工具。在Node.js和web浏览器中工作
+// 地址：https://github.com/visionmedia/debug
 const debug = require('debug')
+// inquirer，一组常用的交互式命令行用户界面。地址：https://github.com/SBoudrias/Inquirer.js
 const inquirer = require('inquirer')
+// 引入node.js的事件触发器模块
 const EventEmitter = require('events')
+// 引入模块文件
 const Generator = require('./Generator')
+// 引入lodash的深拷贝函数
 const cloneDeep = require('lodash.clonedeep')
 const sortObject = require('./util/sortObject')
 const getVersions = require('./util/getVersions')
@@ -14,6 +21,7 @@ const { formatFeatures } = require('./util/features')
 const loadLocalPreset = require('./util/loadLocalPreset')
 const loadRemotePreset = require('./util/loadRemotePreset')
 const generateReadme = require('./util/generateReadme')
+// 工具集合，详见对应的代码解析
 const { resolvePkg, isOfficialPlugin } = require('@vue/cli-shared-utils')
 
 const {
@@ -44,6 +52,7 @@ const {
   loadModule
 } = require('@vue/cli-shared-utils')
 
+// 判断是不是手动模式（这个地方应该就是创建项目的时候问你是手动选择模块还是使用默认设置）
 const isManualMode = answers => answers.preset === '__manual__'
 
 module.exports = class Creator extends EventEmitter {

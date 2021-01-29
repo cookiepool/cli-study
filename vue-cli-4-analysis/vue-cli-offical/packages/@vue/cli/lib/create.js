@@ -9,6 +9,7 @@ const Creator = require('./Creator')
 // 引入本地工具函数，具体含义看对应的源码注释
 const { clearConsole } = require('./util/clearConsole')
 // 引入本地工具函数，具体含义看对应的源码注释
+// 这个就是你在手动选择生成项目时的一些选项，比如linter版本，路由模式等
 const { getPromptModules } = require('./util/createTools')
 // 引入工具函数，具体含义看对应的源码注释
 const { chalk, error, stopSpinner, exit } = require('@vue/cli-shared-utils')
@@ -100,7 +101,12 @@ async function create (projectName, options) {
     }
   }
 
-  // 主体核心代码，构造器
+  // 主体核心代码，构造器，
+  /***
+   * name: 项目名
+   * targetDir: 目标目录
+   * getPromptModules(): 创建项目时的选项
+   * ***/
   const creator = new Creator(name, targetDir, getPromptModules())
   // 创建项目的核心就在这儿了
   await creator.create(options)

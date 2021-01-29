@@ -1,9 +1,19 @@
+/***
+ * 这个文件主要封装了环境判断相关的方法，比如yarn、git、平台环境、浏览器环境等
+ * ***/
+
+// 引入node.js的子进程模块
 const { execSync } = require('child_process')
+// 引入node.js的文件模块
 const fs = require('fs')
+// 引入node.js的路径模块
 const path = require('path')
+// lru-cache，一个缓存对象，用于删除最近最少使用的项。地址：https://github.com/isaacs/node-lru-cache
 const LRU = require('lru-cache')
+// 版本解析工具
 const semver = require('semver')
 
+// 设置缓存
 let _hasYarn
 const _yarnProjects = new LRU({
   max: 10,
