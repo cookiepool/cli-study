@@ -1,4 +1,6 @@
+// node.js的fs模块
 const fs = require('fs')
+// lodash的深拷贝
 const cloneDeep = require('lodash.clonedeep')
 const { getRcPath } = require('./util/rcPath')
 const { exit } = require('@vue/cli-shared-utils/lib/exit')

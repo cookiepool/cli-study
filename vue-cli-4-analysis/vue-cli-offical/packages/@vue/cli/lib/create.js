@@ -103,9 +103,10 @@ async function create (projectName, options) {
 
   // 主体核心代码，构造器，
   /***
-   * name: 项目名
-   * targetDir: 目标目录
-   * getPromptModules(): 创建项目时的选项
+   * 核心构造函数
+   * @param { string } name 创建的项目名
+   * @param { string } targetDir 创建项目时的目标路径
+   * @param { function } getPromptModules 创建项目时的选项时的应答选项
    * ***/
   const creator = new Creator(name, targetDir, getPromptModules())
   // 创建项目的核心就在这儿了

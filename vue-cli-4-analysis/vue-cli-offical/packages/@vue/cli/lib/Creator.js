@@ -27,7 +27,7 @@ const { resolvePkg, isOfficialPlugin } = require('@vue/cli-shared-utils')
 const {
   defaults,
   saveOptions,
-  loadOptions,
+  loadOptions, // 加载对应的选项
   savePreset,
   validatePreset,
   rcPath
@@ -52,19 +52,27 @@ const {
   loadModule
 } = require('@vue/cli-shared-utils')
 
-// 判断是不是手动模式（这个地方应该就是创建项目的时候问你是手动选择模块还是使用默认设置）
+// 判断是不是手动模式（这个地方应该就是创建项目的时候判断是手动选择模块还是使用默认设置或是上次保存的配置信息）
 const isManualMode = answers => answers.preset === '__manual__'
 
 module.exports = class Creator extends EventEmitter {
+  // name：项目名 context: 项目路径 promptModules：创建项目时的问答模块
   constructor (name, context, promptModules) {
+    // 调用super
     super()
 
+    // 项目名
     this.name = name
+    // 项目路径
     this.context = process.env.VUE_CLI_CONTEXT = context
+    // 解析配置信息
     const { presetPrompt, featurePrompt } = this.resolveIntroPrompts()
 
+    // 配置信息
     this.presetPrompt = presetPrompt
+    // 特性功能前置信息
     this.featurePrompt = featurePrompt
+    // 解析选择完功能特性过后的相关选项
     this.outroPrompts = this.resolveOutroPrompts()
     this.injectedPrompts = []
     this.promptCompleteCbs = []
@@ -77,8 +85,16 @@ module.exports = class Creator extends EventEmitter {
     promptModules.forEach(m => m(promptAPI))
   }
 
+  /***
+   * 创建项目
+   * @param { Object } cliOptions 执行vue create时传递进来的选项参数
+   * @param { Any } preset 预置选项
+   * @return { Promise } async修饰过后的函数，返回一个Promise对象 
+   * ***/
   async create (cliOptions = {}, preset = null) {
+    // 判断当前是否是测试或是调试模式
     const isTestOrDebug = process.env.VUE_CLI_TEST || process.env.VUE_CLI_DEBUG
+    // 解构
     const { run, name, context, afterInvokeCbs, afterAnyInvokeCbs } = this
 
     if (!preset) {
@@ -418,27 +434,51 @@ module.exports = class Creator extends EventEmitter {
     }
     return plugins
   }
-
+  /***
+   * 获取预置选项
+   * @return { Object } 返回对应的预置选项
+   * ***/
   getPresets () {
+    // 加载对应的创建项目时的选项
     const savedOptions = loadOptions()
     return Object.assign({}, savedOptions.presets, defaults.presets)
   }
 
+  /***
+   * 解析第一步的选项（预置配置）
+   * @return { Object } 返回对应的配置信息（比如你的预置配置、vue2、vue3或者是Manually select features）
+   * ***/
   resolveIntroPrompts () {
+    // 获取到对应的选项
+    // 这个方法主要是会去取.vuerc里面保存的上次存储的配置信息
     const presets = this.getPresets()
+    // Object.entries()方法返回一个给定对象自身可枚举属性的键值对数组，
+    // 其排列与使用 for...in 循环遍历该对象时返回的顺序一致（区别在于 for-in 循环还会枚举原型链中的属性）。
+    // Object.entries({a: 100, b: 'hello'})
+    // 输出：[['a', 100], ['b', 'hello']]
     const presetChoices = Object.entries(presets).map(([name, preset]) => {
       let displayName = name
+      // 区别判断是选择的vue2还是vue3
       if (name === 'default') {
         displayName = 'Default'
       } else if (name === '__default_vue_3__') {
         displayName = 'Default (Vue 3 Preview)'
       }
-
+      
+      // formatFeatures这个方法会把你选择的功能特性转换为一句话，
+      // 比如这种 hash-mode ([Vue 2] dart-sass, babel, router, vuex, eslint)
       return {
         name: `${displayName} (${formatFeatures(preset)})`,
         value: name
       }
     })
+    // 消息提示-选择你对应的配置，这个对象保存了对应的配置信息，也就是我们执行vue create projname
+    // 显示的一行行选择，大概长下面这样
+    // history-mode ([Vue 2] dart-sass, babel, router, vuex, eslint)
+    // hash-mode ([Vue 2] dart-sass, babel, router, vuex, eslint)
+    // Default ([Vue 2] babel, eslint)
+    // Default (Vue 3 Preview) ([Vue 3] babel, eslint)
+    // Manually select features
     const presetPrompt = {
       name: 'preset',
       type: 'list',
@@ -451,6 +491,9 @@ module.exports = class Creator extends EventEmitter {
         }
       ]
     }
+    // 选择对应的模块的时候的提示消息
+    // 我们选择了对应的配置后，之后会让你选择对应的功能，比如babel、ts、vuex、router这些东西
+    // ? Check the features needed for your project: (Press <space> to select, <a> to toggle all, <i> to invert selection)
     const featurePrompt = {
       name: 'features',
       when: isManualMode,
@@ -460,11 +503,16 @@ module.exports = class Creator extends EventEmitter {
       pageSize: 10
     }
     return {
+      // 第一步对应的配置集合
       presetPrompt,
+      // 第二步选择功能时的前置信息
       featurePrompt
     }
   }
-
+  /***
+   * 在选择完特性功能后，对应的其他选择，从Where do you prefer placing config for Babel, ESLint, etc.?
+   * 这个消息过后的相关的选择提示，
+   * ***/
   resolveOutroPrompts () {
     const outroPrompts = [
       {
@@ -500,9 +548,11 @@ module.exports = class Creator extends EventEmitter {
 
     // ask for packageManager once
     const savedOptions = loadOptions()
+    // 这后面的操作对应的是你的选项配置的包管理工具类型
     if (!savedOptions.packageManager && (hasYarn() || hasPnpm3OrLater())) {
       const packageManagerChoices = []
 
+      // yarn
       if (hasYarn()) {
         packageManagerChoices.push({
           name: 'Use Yarn',
@@ -510,7 +560,7 @@ module.exports = class Creator extends EventEmitter {
           short: 'Yarn'
         })
       }
-
+      // pnpm
       if (hasPnpm3OrLater()) {
         packageManagerChoices.push({
           name: 'Use PNPM',
@@ -518,7 +568,7 @@ module.exports = class Creator extends EventEmitter {
           short: 'PNPM'
         })
       }
-
+      // 默认使用npm
       packageManagerChoices.push({
         name: 'Use NPM',
         value: 'npm',

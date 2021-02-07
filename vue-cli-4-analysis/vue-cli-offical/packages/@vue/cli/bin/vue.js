@@ -112,7 +112,7 @@ program
   .option('--skipGetStarted', 'Skip displaying "Get started" instructions')
   .action((name, cmd) => {
     // 处理commander传过来的选项，cmd是一个commander对象，包含我们使用命令时传递过来的选项等参数
-    // 这个函数的定义在最低部
+    // cleanArgs这个函数的定义在最低部
     const options = cleanArgs(cmd)
     
     // 使用插件minimist解析参数，process.argv是一个数组，数组前两个数据是node的运行绝对路径和脚本执行的绝对路径。

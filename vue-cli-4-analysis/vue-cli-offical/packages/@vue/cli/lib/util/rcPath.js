@@ -1,3 +1,4 @@
+// 分别引入node.js文件系统、操作系统、路径三个模块
 const fs = require('fs-extra')
 const os = require('os')
 const path = require('path')
