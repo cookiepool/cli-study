@@ -552,7 +552,7 @@ module.exports = class Creator extends EventEmitter {
     if (!savedOptions.packageManager && (hasYarn() || hasPnpm3OrLater())) {
       const packageManagerChoices = []
 
-      // yarn
+      // yarn-1
       if (hasYarn()) {
         packageManagerChoices.push({
           name: 'Use Yarn',
