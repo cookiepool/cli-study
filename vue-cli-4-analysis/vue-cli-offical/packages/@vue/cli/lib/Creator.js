@@ -65,7 +65,7 @@ module.exports = class Creator extends EventEmitter {
     this.name = name
     // 项目路径
     this.context = process.env.VUE_CLI_CONTEXT = context
-    // 解析配置信息
+    // 解析问答选择配置信息
     const { presetPrompt, featurePrompt } = this.resolveIntroPrompts()
 
     // 配置信息
