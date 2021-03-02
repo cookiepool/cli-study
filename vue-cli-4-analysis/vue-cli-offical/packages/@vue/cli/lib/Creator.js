@@ -96,7 +96,7 @@ module.exports = class Creator extends EventEmitter {
     const isTestOrDebug = process.env.VUE_CLI_TEST || process.env.VUE_CLI_DEBUG
     // 解构
     const { run, name, context, afterInvokeCbs, afterAnyInvokeCbs } = this
-
+    // 如果没有默认的配置信息
     if (!preset) {
       if (cliOptions.preset) {
         // vue create foo --preset bar

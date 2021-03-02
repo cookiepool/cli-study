@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^6.2.0",
+    "inquirer": "^8.0.0",
     "minimist": "^1.2.5"
   }
 }
