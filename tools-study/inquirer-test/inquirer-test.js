@@ -4,12 +4,13 @@ let questions = [
   {
     type: 'confirm',
     name: 'select your tool',
-    message: 'select this?',
-    default: false
+    message: 'is your choice?',
+    default: 123,
+    prefix: 'start---',
+    suffix: '---end'
   }
 ]
 
 inquirer.prompt(questions).then((answers) => {
-  console.log('tag here');
   console.log(answers);
 })
