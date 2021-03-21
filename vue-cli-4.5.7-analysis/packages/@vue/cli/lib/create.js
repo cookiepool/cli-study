@@ -113,6 +113,7 @@ async function create (projectName, options) {
   await creator.create(options)
 }
 
+// ...args表示剩余参数
 module.exports = (...args) => {
   return create(...args).catch(err => {
     stopSpinner(false) // do not persist

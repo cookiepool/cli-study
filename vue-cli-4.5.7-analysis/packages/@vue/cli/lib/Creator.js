@@ -15,6 +15,7 @@ const sortObject = require('./util/sortObject')
 const getVersions = require('./util/getVersions')
 const PackageManager = require('./util/ProjectPackageManager')
 const { clearConsole } = require('./util/clearConsole')
+// 
 const PromptModuleAPI = require('./PromptModuleAPI')
 const writeFileTree = require('./util/writeFileTree')
 const { formatFeatures } = require('./util/features')
@@ -70,17 +71,22 @@ module.exports = class Creator extends EventEmitter {
 
     // 配置信息
     this.presetPrompt = presetPrompt
-    // 特性功能前置信息
+    // 特性功能信息
     this.featurePrompt = featurePrompt
     // 解析选择完功能特性过后的相关选项
     this.outroPrompts = this.resolveOutroPrompts()
+    // 特性功能对应的选项
     this.injectedPrompts = []
+    // 回调函数
     this.promptCompleteCbs = []
+
     this.afterInvokeCbs = []
     this.afterAnyInvokeCbs = []
 
     this.run = this.run.bind(this)
 
+    // 执行封装好的PromptModuleAPI，将配置好的特性和选项注入featurePrompt、injectedPrompts、promptCompleteCbs，
+    // 详细代码逻辑见PromptModuleAPI.js
     const promptAPI = new PromptModuleAPI(this)
     promptModules.forEach(m => m(promptAPI))
   }
@@ -98,14 +104,18 @@ module.exports = class Creator extends EventEmitter {
     const { run, name, context, afterInvokeCbs, afterAnyInvokeCbs } = this
     // 如果没有默认的配置信息
     if (!preset) {
+      // 执行vue create时执行了参数--preset
       if (cliOptions.preset) {
         // vue create foo --preset bar
+        // 加载默认配置
         preset = await this.resolvePreset(cliOptions.preset, cliOptions.clone)
       } else if (cliOptions.default) {
         // vue create foo --default
+        // 加载默认配置
         preset = defaults.presets.default
       } else if (cliOptions.inlinePreset) {
         // vue create foo --inlinePreset {...}
+        // 使用--inlinePreset命令，传入自定义的json格式的配置
         try {
           preset = JSON.parse(cliOptions.inlinePreset)
         } catch (e) {
@@ -113,6 +123,7 @@ module.exports = class Creator extends EventEmitter {
           exit(1)
         }
       } else {
+        // 以上条件都不满足时，执行以下解析操作
         preset = await this.promptAndResolvePreset()
       }
     }

@@ -1,4 +1,5 @@
 module.exports = class PromptModuleAPI {
+  // creator就是Creator.js本身
   constructor (creator) {
     this.creator = creator
   }
