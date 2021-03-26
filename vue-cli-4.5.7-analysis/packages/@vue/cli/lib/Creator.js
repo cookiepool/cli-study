@@ -596,7 +596,9 @@ module.exports = class Creator extends EventEmitter {
 
     return outroPrompts
   }
-
+  /***
+   * 解析用户最终选择的选项
+   * ***/
   resolveFinalPrompts () {
     // patch generator-injected prompts to only show in manual mode
     this.injectedPrompts.forEach(prompt => {
