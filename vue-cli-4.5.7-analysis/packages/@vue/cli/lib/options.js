@@ -34,9 +34,13 @@ exports.validatePreset = preset => validate(preset, presetSchema, msg => {
   error(`invalid preset options: ${msg}`)
 })
 
+// 默认配置
 exports.defaultPreset = {
+  // 配置信息是否保存在单独的文件里面保存，这个主要是说你的eslint、postcss这些是否生成独立文件，不生成独立的文件的话就会保存在package.json里面相关的属性里
   useConfigFiles: false,
+  // 是否使用CSS预处理工具
   cssPreprocessor: undefined,
+  // 插件配置信息
   plugins: {
     '@vue/cli-plugin-babel': {},
     '@vue/cli-plugin-eslint': {
@@ -47,10 +51,14 @@ exports.defaultPreset = {
 }
 
 exports.defaults = {
+  // 最新的脚手架版本的发布时间
   lastChecked: undefined,
+  // 最新的脚手架版本
   latestVersion: undefined,
 
+  // 包管理工具
   packageManager: undefined,
+  // 是否使用淘宝镜像
   useTaobaoRegistry: undefined,
   presets: {
     'default': Object.assign({ vueVersion: '2' }, exports.defaultPreset),
