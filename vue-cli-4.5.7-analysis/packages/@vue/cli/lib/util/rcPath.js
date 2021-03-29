@@ -18,19 +18,31 @@ const xdgConfigPath = file => {
 // we introduced a change storing .vuerc in AppData, but the benefit isn't
 // really obvious so we are reverting it to keep consistency across OSes
 const migrateWindowsConfigPath = file => {
+  // 如果不是windows平台，取消操作
   if (process.platform !== 'win32') {
     return
   }
+  // 获取windows平台的appdata文件夹路径
+  // 比如：'C:\\Users\\cm-lee\\AppData\\Roaming'
   const appData = process.env.APPDATA
   if (appData) {
+    // path.join() 方法会将所有给定的 path 片段连接到一起（使用平台特定的分隔符作为定界符），然后规范化生成的路径。
+    // 长度为零的 path 片段会被忽略。 如果连接后的路径字符串为长度为零的字符串，则返回 '.'，表示当前工作目录。
+    // 'C:\\Users\\cm-lee\\AppData\\Roaming\\vue'
     const rcDir = path.join(appData, 'vue')
+    // 'C:\\Users\\cm-lee\\AppData\\Roaming\\vue\\.vuerc'
     const rcFile = path.join(rcDir, file)
+    // os.homedir返回当前用户的主目录的字符串路径。'C:\\Users\\cm-lee'
+    // 'C:\\Users\\cm-lee\\.vuerc'
     const properRcFile = path.join(os.homedir(), file)
+    // fs.existsSync()：如果路径存在，则返回 true，否则返回 false。
     if (fs.existsSync(rcFile)) {
       try {
         if (fs.existsSync(properRcFile)) {
+          // 移除文件或者目录，这个api是fs-extra特有的
           fs.removeSync(rcFile)
         } else {
+          // 移动文件或目录m,这个api是fs-extra特有的
           fs.moveSync(rcFile, properRcFile)
         }
       } catch (e) {}
