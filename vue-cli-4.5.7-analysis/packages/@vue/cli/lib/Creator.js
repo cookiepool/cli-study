@@ -26,7 +26,7 @@ const generateReadme = require('./util/generateReadme')
 const { resolvePkg, isOfficialPlugin } = require('@vue/cli-shared-utils')
 
 const {
-  defaults,
+  defaults, // 默认配置
   saveOptions,
   loadOptions, // 加载对应的选项
   savePreset,
