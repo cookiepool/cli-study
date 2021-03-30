@@ -8,6 +8,7 @@ const xdgConfigPath = file => {
   if (xdgConfigHome) {
     const rcDir = path.join(xdgConfigHome, 'vue')
     if (!fs.existsSync(rcDir)) {
+      // fs.ensureDirSync()，fs-extra模块的专有语法，确保目录存在。如果目录结构不存在，则创建目录结构。如果提供，选项可以指定目录所需的模式
       fs.ensureDirSync(rcDir, 0o700)
     }
     return path.join(rcDir, file)
@@ -17,6 +18,7 @@ const xdgConfigPath = file => {
 // migration for 3.0.0-rc.7
 // we introduced a change storing .vuerc in AppData, but the benefit isn't
 // really obvious so we are reverting it to keep consistency across OSes
+// 这个方法是让.vuerc都统一放到用户文件夹下管理，不在放在AppData/Roaming下管理
 const migrateWindowsConfigPath = file => {
   // 如果不是windows平台，取消操作
   if (process.platform !== 'win32') {
@@ -55,6 +57,7 @@ exports.getRcPath = file => {
   return (
     process.env.VUE_CLI_CONFIG_PATH ||
     xdgConfigPath(file) ||
+    // os.homedir返回当前用户的主目录的字符串路径。'C:\\Users\\cm-lee'
     path.join(os.homedir(), file)
   )
 }
