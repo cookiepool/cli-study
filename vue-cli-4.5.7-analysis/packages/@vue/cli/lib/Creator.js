@@ -75,6 +75,8 @@ module.exports = class Creator extends EventEmitter {
     this.featurePrompt = featurePrompt
     // 解析选择完功能特性过后的相关选项
     this.outroPrompts = this.resolveOutroPrompts()
+
+
     // 特性功能对应的选项
     this.injectedPrompts = []
     // 回调函数
@@ -174,12 +176,15 @@ module.exports = class Creator extends EventEmitter {
     const pm = new PackageManager({ context, forcePackageManager: packageManager })
 
     log(`✨  Creating project in ${chalk.yellow(context)}.`)
+    // 这个creation事件在cli-ui里面需要用到，@vue\cli-ui\apollo-server\connectors\projects.js
+    // 这个文件里面有代码监听了creation事件，里面也使用了Creator构造函数
     this.emit('creation', { event: 'creating' })
 
     // get latest CLI plugin version
     const { latestMinor } = await getVersions()
 
     // generate package.json with plugin dependencies
+    // 生成package.json参数
     const pkg = {
       name,
       version: '0.1.0',
@@ -342,6 +347,7 @@ module.exports = class Creator extends EventEmitter {
     // prompt
     if (!answers) {
       await clearConsole(true)
+      // 解析出所有的选项并注入inquirer.prompt。
       answers = await inquirer.prompt(this.resolveFinalPrompts())
     }
     debug('vue-cli:answers')(answers)
@@ -353,6 +359,7 @@ module.exports = class Creator extends EventEmitter {
     }
 
     let preset
+    // 非手动模式
     if (answers.preset && answers.preset !== '__manual__') {
       preset = await this.resolvePreset(answers.preset)
     } else {
@@ -597,7 +604,7 @@ module.exports = class Creator extends EventEmitter {
     return outroPrompts
   }
   /***
-   * 解析用户最终选择的选项
+   * 解析用户最终选择的选项（最终的所有选项）
    * ***/
   resolveFinalPrompts () {
     // patch generator-injected prompts to only show in manual mode
