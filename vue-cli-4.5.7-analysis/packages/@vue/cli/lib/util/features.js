@@ -18,6 +18,7 @@ exports.getFeatures = (preset) => {
   return features
 }
 
+// 这个函数转换后大概长这样：[Vue 2] dart-sass, babel, router, vuex, eslint
 exports.formatFeatures = (preset) => {
   const versionInfo = chalk.yellow(`[Vue ${preset.vueVersion || 2}] `)
   const features = exports.getFeatures(preset)

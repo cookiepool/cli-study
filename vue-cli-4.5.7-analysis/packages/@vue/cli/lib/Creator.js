@@ -451,7 +451,34 @@ module.exports = class Creator extends EventEmitter {
    * ***/
   getPresets () {
     // 加载对应的创建项目时的选项
+    /***
+     * loadOptions加载本地.vuerc文件的内容，大概长这样
+     * {
+        "useTaobaoRegistry": true,
+        "latestVersion": "4.5.12",
+        "lastChecked": 1616988092123,
+        "packageManager": "npm",
+        "presets": {
+          "mine-default": {
+            "useConfigFiles": true,
+            "plugins": {
+              "@vue/cli-plugin-babel": {},
+              "@vue/cli-plugin-router": { "historyMode": false },
+              "@vue/cli-plugin-vuex": {},
+              "@vue/cli-plugin-eslint": {
+                "config": "prettier",
+                "lintOn": ["save", "commit"]
+              }
+            },
+            "vueVersion": "2",
+            "cssPreprocessor": "dart-sass"
+          }
+        }
+      }
+     * ***/
     const savedOptions = loadOptions()
+
+    // 返回你本地保存的配置以及cli脚手架自带的配置
     return Object.assign({}, savedOptions.presets, defaults.presets)
   }
 
@@ -462,7 +489,52 @@ module.exports = class Creator extends EventEmitter {
   resolveIntroPrompts () {
     // 获取到对应的选项
     // 这个方法主要是会去取.vuerc里面保存的上次存储的配置信息
+    /***
+     * persets对象大概长这样
+     * {
+        "mine-default": {
+          "useConfigFiles": true,
+          "plugins": {
+            "@vue/cli-plugin-babel": {},
+            "@vue/cli-plugin-router": { "historyMode": false },
+            "@vue/cli-plugin-vuex": {},
+            "@vue/cli-plugin-eslint": {
+              "config": "prettier",
+              "lintOn": ["save", "commit"]
+            }
+          },
+          "vueVersion": "2",
+          "cssPreprocessor": "dart-sass"
+        },
+        "default": {
+          "useConfigFiles": false,
+          "plugins": {
+            "@vue/cli-plugin-babel": {},
+            "@vue/cli-plugin-eslint": {
+              "config": "base",
+              "lintOn": "['save']"
+            }
+          },
+          "vueVersion": "2",
+          "cssPreprocessor": "undefined"
+        },
+        "__default_vue_3__": {
+          "useConfigFiles": false,
+          "plugins": {
+            "@vue/cli-plugin-babel": {},
+            "@vue/cli-plugin-eslint": {
+              "config": "base",
+              "lintOn": "['save']"
+            }
+          },
+          "vueVersion": "3",
+          "cssPreprocessor": "undefined"
+        }
+      }
+     * ***/
     const presets = this.getPresets()
+
+
     // Object.entries()方法返回一个给定对象自身可枚举属性的键值对数组，
     // 其排列与使用 for...in 循环遍历该对象时返回的顺序一致（区别在于 for-in 循环还会枚举原型链中的属性）。
     // Object.entries({a: 100, b: 'hello'})
