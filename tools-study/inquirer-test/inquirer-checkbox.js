@@ -8,7 +8,9 @@ let questions = [
     choices: [
       new inquirer.Separator('--- 国产品牌 ---'),
       {
-        name: 'Huawei'
+        name: 'Huawei',
+        value: 'huawei',
+        description: 'Huawei is china brand',
       },
       {
         name: 'Xiaomi'
