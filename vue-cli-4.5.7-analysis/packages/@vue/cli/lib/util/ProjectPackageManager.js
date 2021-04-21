@@ -1,10 +1,14 @@
 const fs = require('fs-extra')
 const path = require('path')
 
+// 一个用于node的ini文件的格式解析器和序列化器。
+// https://github.com/npm/ini#readme
 const ini = require('ini')
 const minimist = require('minimist')
 const LRU = require('lru-cache')
 
+// 从字符串中去除ANSI转义代码
+// https://github.com/chalk/strip-ansi#readme
 const stripAnsi = require('strip-ansi')
 
 const {
