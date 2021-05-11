@@ -15,6 +15,9 @@
     "execa": "^5.0.0",
     "globby": "^11.0.3",
     "inquirer": "^8.0.0",
-    "minimist": "^1.2.5"
+    "leven": "^3.1.0",
+    "minimist": "^1.2.5",
+    "slash": "^3.0.0",
+    "validate-npm-package-name": "^3.0.0"
   }
 }
