@@ -1,6 +1,9 @@
 const fs = require('fs-extra')
 const loadPresetFromDir = require('./loadPresetFromDir')
 
+/***
+ * @param { String } path 配置文件的路径
+ * ***/
 module.exports = async function loadLocalPreset (path) {
   const stats = fs.statSync(path)
   if (stats.isFile()) {

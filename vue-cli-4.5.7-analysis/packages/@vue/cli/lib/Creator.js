@@ -386,13 +386,25 @@ module.exports = class Creator extends EventEmitter {
     return preset
   }
 
+  /***
+   * 解析默认配置
+   * @param { String } name 预置配置的名字
+   * @param { String } clone 是否使用了克隆命令
+   * @return { Object } 返回配置信息
+   * ***/
   async resolvePreset (name, clone) {
     let preset
+    // 加载本地保存的默认配置
     const savedPresets = this.getPresets()
 
+    // 如果传入的预置配置在本地的配置里面有，则取本地的
     if (name in savedPresets) {
       preset = savedPresets[name]
-    } else if (name.endsWith('.json') || /^\./.test(name) || path.isAbsolute(name)) {
+    } 
+    // path.isAbsolute() 方法检测 path 是否为绝对路径。
+    // 这部分表示你在使用vue create命令时在后面跟了参数--preset 文件名，表示你自己提供配置信息
+    // 这个预置配置的文件放在你要生成项目的目录下面。
+    else if (name.endsWith('.json') || /^\./.test(name) || path.isAbsolute(name)) {
       preset = await loadLocalPreset(path.resolve(name))
     } else if (name.includes('/')) {
       log(`Fetching remote preset ${chalk.cyan(name)}...`)
