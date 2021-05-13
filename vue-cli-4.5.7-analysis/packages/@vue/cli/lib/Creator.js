@@ -125,7 +125,7 @@ module.exports = class Creator extends EventEmitter {
           exit(1)
         }
       } else {
-        // 以上条件都不满足时，执行以下解析操作
+        // 以上条件都不满足时，执行以下解析操作，通过prompts自行选择相关配置特性
         preset = await this.promptAndResolvePreset()
       }
     }
@@ -137,6 +137,8 @@ module.exports = class Creator extends EventEmitter {
       projectName: name
     }, preset)
 
+    // vue create proj --bare
+    // Scaffold project without beginner instructions
     if (cliOptions.bare) {
       preset.plugins['@vue/cli-service'].bare = true
     }
@@ -165,14 +167,16 @@ module.exports = class Creator extends EventEmitter {
       preset.plugins['@vue/cli-plugin-vuex'] = {}
     }
 
+    // 确认包管理工具
     const packageManager = (
       cliOptions.packageManager ||
       loadOptions().packageManager ||
       (hasYarn() ? 'yarn' : null) ||
       (hasPnpm3OrLater() ? 'pnpm' : 'npm')
     )
-
+    
     await clearConsole()
+    // 创建一个包管理实例
     const pm = new PackageManager({ context, forcePackageManager: packageManager })
 
     log(`✨  Creating project in ${chalk.yellow(context)}.`)
@@ -343,9 +347,13 @@ module.exports = class Creator extends EventEmitter {
     return execa(command, args, { cwd: this.context })
   }
 
+  /***
+   * 通过prompts选择配置选项
+   * ***/
   async promptAndResolvePreset (answers = null) {
     // prompt
     if (!answers) {
+      // 清空控制台
       await clearConsole(true)
       // 解析出所有的选项并注入inquirer.prompt。
       answers = await inquirer.prompt(this.resolveFinalPrompts())
@@ -406,10 +414,13 @@ module.exports = class Creator extends EventEmitter {
     // 这个预置配置的文件放在你要生成项目的目录下面。
     else if (name.endsWith('.json') || /^\./.test(name) || path.isAbsolute(name)) {
       preset = await loadLocalPreset(path.resolve(name))
-    } else if (name.includes('/')) {
+    } 
+    // 提供的预置配置为一个连接
+    else if (name.includes('/')) {
       log(`Fetching remote preset ${chalk.cyan(name)}...`)
       this.emit('creation', { event: 'fetch-remote-preset' })
       try {
+        // 加载远程的预置配置
         preset = await loadRemotePreset(name, clone)
       } catch (e) {
         error(`Failed fetching remote preset ${chalk.cyan(name)}:`)

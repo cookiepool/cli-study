@@ -155,6 +155,7 @@ class PackageManager {
     }
 
     // Plugin may be located in another location if `resolveFrom` presents.
+    // 看当前目录下面是否存在package.json
     const projectPkg = resolvePkg(this.context)
     const resolveFrom = projectPkg && projectPkg.vuePlugins && projectPkg.vuePlugins.resolveFrom
 
