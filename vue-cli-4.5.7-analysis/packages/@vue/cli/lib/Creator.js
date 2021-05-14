@@ -11,16 +11,21 @@ const EventEmitter = require('events')
 const Generator = require('./Generator')
 // 引入lodash的深拷贝函数
 const cloneDeep = require('lodash.clonedeep')
+// 对对象进行排序
 const sortObject = require('./util/sortObject')
+// 获取版本号
 const getVersions = require('./util/getVersions')
+// 包管理工具的构造函数
 const PackageManager = require('./util/ProjectPackageManager')
 const { clearConsole } = require('./util/clearConsole')
-// 
+// 注入prompts
 const PromptModuleAPI = require('./PromptModuleAPI')
+// 生成文件
 const writeFileTree = require('./util/writeFileTree')
 const { formatFeatures } = require('./util/features')
 const loadLocalPreset = require('./util/loadLocalPreset')
 const loadRemotePreset = require('./util/loadRemotePreset')
+// 生成自述文件README.md
 const generateReadme = require('./util/generateReadme')
 // 工具集合，详见对应的代码解析
 const { resolvePkg, isOfficialPlugin } = require('@vue/cli-shared-utils')
@@ -82,6 +87,7 @@ module.exports = class Creator extends EventEmitter {
     // 回调函数
     this.promptCompleteCbs = []
 
+    // 这个两个变量的值在GeneratorAPI.js里面生成
     this.afterInvokeCbs = []
     this.afterAnyInvokeCbs = []
 
@@ -129,6 +135,23 @@ module.exports = class Creator extends EventEmitter {
         preset = await this.promptAndResolvePreset()
       }
     }
+
+    // 通过手动模式选择的perset大概长这样
+    // {
+    //   useConfigFiles: true,
+    //   plugins: {
+    //     '@vue/cli-plugin-babel': {},
+    //     '@vue/cli-plugin-typescript': { classComponent: false, useTsWithBabel: true },
+    //     '@vue/cli-plugin-pwa': {},
+    //     '@vue/cli-plugin-router': { historyMode: false },
+    //     '@vue/cli-plugin-vuex': {},
+    //     '@vue/cli-plugin-eslint': { config: 'prettier', lintOn: [Array] },
+    //     '@vue/cli-plugin-unit-jest': {},
+    //     '@vue/cli-plugin-e2e-cypress': {}
+    //   },
+    //   vueVersion: '2',
+    //   cssPreprocessor: 'dart-sass'
+    // }
 
     // clone before mutating
     preset = cloneDeep(preset)
@@ -194,9 +217,10 @@ module.exports = class Creator extends EventEmitter {
       version: '0.1.0',
       private: true,
       devDependencies: {},
-      ...resolvePkg(context)
+      ...resolvePkg(context) // 如果生成项目的文件夹提供了package.json文件，...resolvePkg(context)这句话才有实际作用
     }
     const deps = Object.keys(preset.plugins)
+    // 将cli相关的插件注入到package.json的devDependencies
     deps.forEach(dep => {
       if (preset.plugins[dep]._isPreset) {
         return
@@ -204,6 +228,7 @@ module.exports = class Creator extends EventEmitter {
 
       let { version } = preset.plugins[dep]
 
+      // 判定@vue/cli-plugin-XXX系列插件的版本
       if (!version) {
         if (isOfficialPlugin(dep) || dep === '@vue/cli-service' || dep === '@vue/babel-preset-env') {
           version = isTestOrDebug ? `file:${path.resolve(__dirname, '../../../', dep)}` : `~${latestMinor}`
@@ -264,6 +289,16 @@ module.exports = class Creator extends EventEmitter {
     // run generator
     log(`🚀  Invoking generators...`)
     this.emit('creation', { event: 'invoking-generators' })
+    //   plugins: {
+    //     '@vue/cli-plugin-babel': {},
+    //     '@vue/cli-plugin-typescript': { classComponent: false, useTsWithBabel: true },
+    //     '@vue/cli-plugin-pwa': {},
+    //     '@vue/cli-plugin-router': { historyMode: false },
+    //     '@vue/cli-plugin-vuex': {},
+    //     '@vue/cli-plugin-eslint': { config: 'prettier', lintOn: [Array] },
+    //     '@vue/cli-plugin-unit-jest': {},
+    //     '@vue/cli-plugin-e2e-cypress': {}
+    //   },
     const plugins = await this.resolvePlugins(preset.plugins, pkg)
     const generator = new Generator(context, {
       pkg,
@@ -342,6 +377,7 @@ module.exports = class Creator extends EventEmitter {
     generator.printExitLogs()
   }
 
+  // 执行相关的命令（npm git的相关命令）
   run (command, args) {
     if (!args) { [command, ...args] = command.split(/\s+/) }
     return execa(command, args, { cwd: this.context })
@@ -444,8 +480,15 @@ module.exports = class Creator extends EventEmitter {
   }
 
   // { id: options } => [{ id, apply, options }]
+  /***
+   * 解析插件
+   * @param { Object } rawPlugins 选择的插件列表
+   * @param { Object } pkg package.json信息
+   * @return { Array } 返回解析过后的数组
+   * ***/
   async resolvePlugins (rawPlugins, pkg) {
     // ensure cli-service is invoked first
+    // 对对象进行排序
     rawPlugins = sortObject(rawPlugins, ['@vue/cli-service'], true)
     const plugins = []
     for (const id of Object.keys(rawPlugins)) {
@@ -720,7 +763,13 @@ module.exports = class Creator extends EventEmitter {
     return prompts
   }
 
+  /***
+   * 是否初始化git
+   * @param { Object } cliOptions commander命令选项
+   * @return { Boolean } true | false
+   * ***/
   shouldInitGit (cliOptions) {
+    // 是否安装了git
     if (!hasGit()) {
       return false
     }
@@ -733,6 +782,7 @@ module.exports = class Creator extends EventEmitter {
       return false
     }
     // default: true unless already in a git repo
+    // 判断项目下是否包含.git
     return !hasProjectGit(this.context)
   }
 }

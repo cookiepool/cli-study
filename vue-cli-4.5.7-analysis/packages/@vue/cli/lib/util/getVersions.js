@@ -11,7 +11,9 @@ module.exports = async function getVersions () {
   }
 
   let latest
+  // 读取项目的package.json文件下的版本字段
   const local = require(`../../package.json`).version
+  // 测试或者调试模式下
   if (process.env.VUE_CLI_TEST || process.env.VUE_CLI_DEBUG) {
     return (sessionCached = {
       current: local,
@@ -21,14 +23,17 @@ module.exports = async function getVersions () {
   }
 
   // should also check for prerelease versions if the current one is a prerelease
+  // prerelease(version): 返回预发布组件的数组，如果不存在则返回null。
   const includePrerelease = !!semver.prerelease(local)
 
   const { latestVersion = local, lastChecked = 0 } = loadOptions()
   const cached = latestVersion
+  // 计算上一次检测版本距离目前时间过去了多少天
   const daysPassed = (Date.now() - lastChecked) / (60 * 60 * 1000 * 24)
 
   let error
   if (daysPassed > 1) {
+    // 超过一天就重新检测，并且不再后台等待
     // if we haven't check for a new version in a day, wait for the check
     // before proceeding
     try {
@@ -38,6 +43,7 @@ module.exports = async function getVersions () {
       error = e
     }
   } else {
+    // 后台静默检测
     // Otherwise, do a check in the background. If the result was updated,
     // it will be used for the next 24 hours.
     // don't throw to interrupt the user if the background check failed
@@ -71,6 +77,7 @@ module.exports = async function getVersions () {
 
 // fetch the latest version and save it on disk
 // so that it is available immediately next time
+// 缓存版本信息在本地磁盘上
 async function getAndCacheLatestVersion (cached, includePrerelease) {
   let version = await pm.getRemoteVersion('vue-cli-version-marker', 'latest')
 
