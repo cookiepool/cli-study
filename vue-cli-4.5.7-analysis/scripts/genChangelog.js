@@ -22,6 +22,9 @@ const gen = (module.exports = async () => {
   delete process.env.PREFIX
 })
 
+// 当 Node.js 直接运行一个文件时，require.main 会被设为它的 module。
+// 这意味着可以通过 require.main === module 来判断一个文件是否被直接运行。
+// https://juejin.cn/post/6844903688838856712
 if (require.main === module) {
   gen().catch(err => {
     console.error(err)
