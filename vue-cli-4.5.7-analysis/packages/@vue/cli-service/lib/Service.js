@@ -56,18 +56,23 @@ module.exports = class Service {
     if (this.initialized) {
       return
     }
+    // 是否初始化的标志
     this.initialized = true
+    // 模式
     this.mode = mode
 
     // load mode .env
+    // 加载项目目录下的.env.xxx文件，指定的配置
     if (mode) {
       this.loadEnv(mode)
     }
     // load base .env
+    // 加载默认配置.env文件
     this.loadEnv()
 
     // load user config
     const userOptions = this.loadUserOptions()
+    // defaults表示默认的配置
     this.projectOptions = defaultsDeep(userOptions, defaults())
 
     debug('vue:project-config')(this.projectOptions)
@@ -89,6 +94,7 @@ module.exports = class Service {
 
   loadEnv (mode) {
     const logger = debug('vue:env')
+    // 解析项目目录的.env.xxx文件的路径（绝对路径）
     const basePath = path.resolve(this.context, `.env${mode ? `.${mode}` : ``}`)
     const localPath = `${basePath}.local`
 
@@ -105,6 +111,7 @@ module.exports = class Service {
       }
     }
 
+    // 使用dotenv注入本地.env文件的字段到process.env
     load(localPath)
     load(basePath)
 
@@ -202,10 +209,16 @@ module.exports = class Service {
     return plugins
   }
 
+  /***
+   * @param {String} name 构建命令，可选参数为build、serve
+   * @param {Object} args 额外参数 {_: [ 'build' ],modern: true,report: false,'report-json': false,'inline-vue': false,watch: false,open: false,copy: false,https: false,verbose: false}
+   * @param {Array} rawArgv [ 'build', '--modern' ]
+   * ***/
   async run (name, args = {}, rawArgv = []) {
     // resolve mode
     // prioritize inline --mode
     // fallback to resolved default modes from plugins or development if --watch is defined
+    // 如果你指定了内联格式的模式，优先使用内联的，比如你的npm脚本里面是这样配置的：vue-cli-service build --mode production
     const mode = args.mode || (name === 'build' && args.watch ? 'development' : this.modes[name])
 
     // --skip-plugins arg may have plugins that should be skipped during init()
@@ -301,6 +314,7 @@ module.exports = class Service {
     return config
   }
 
+  // 加载项目根目录的默认配置vue.config.js
   loadUserOptions () {
     // vue.config.c?js
     let fileConfig, pkgConfig, resolved, resolvedFrom
