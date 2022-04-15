@@ -18,6 +18,7 @@
     "inquirer": "^8.0.0",
     "leven": "^3.1.0",
     "minimist": "^1.2.5",
+    "prompts": "^2.4.2",
     "semver": "^7.3.5",
     "slash": "^3.0.0",
     "validate-npm-package-name": "^3.0.0"
